@@ -25,16 +25,13 @@ mod filtar {
             None => Box::default(),
         };
         py.detach(|| {
-            dbg!(&exclude);
             let mut a = tar::Archive::new(zstd::Decoder::new(File::open(src)?)?);
-            a.set_overwrite(false);
             for file in a.entries()? {
                 let mut file = file?;
                 let path = file.path()?;
                 // the python implementation does not scan through all ignored files on every
                 // iteration. If needed this could be optimized
                 if exclude.iter().any(|excluded| path.starts_with(excluded)) {
-                    dbg!(path);
                     continue;
                 }
                 file.unpack_in(&dest)?;
