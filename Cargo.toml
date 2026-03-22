@@ -1,0 +1,15 @@
+[package]
+name = "filtar"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "filtar"
+crate-type = ["cdylib"]
+
+[dependencies]
+# "abi3-py311" tells pyo3 (and maturin) to build using the stable ABI with minimum Python version 3.11
+pyo3 = { version = "0.28.2", features = ["abi3-py38"] }
+tar = "0.4.45"
+zstd = "0.13.3"
