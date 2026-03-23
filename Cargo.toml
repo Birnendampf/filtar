@@ -13,4 +13,4 @@ crate-type = ["cdylib"]
 pyo3 = { version = "0.28.2", features = ["abi3-py310"] }
 tar = "0.4.45"
 walkdir = "2.5.0"
-zstd = "0.13.3"
+zstd = { version = "0.13.3", features = ["zstdmt"] }

@@ -1,4 +1,5 @@
 # filtar
+
 [![PyPI - Version](https://img.shields.io/pypi/v/filtar)](https://pypi.org/project/filtar/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/filtar)]((https://pypi.org/project/filtar/))
 
@@ -25,11 +26,13 @@ Extract archive to `dest`.
 
 ---
 
-### `create(src: StrPath, dest: StrPath, exclude: Set[str] = ...) -> None`
+### `create(src: StrPath, dest: StrPath, exclude: Set[str] = ... , n_workers: int = 0, level: int = 0) -> None`
 
 Create archive from `src`.
 
 * `exclude`: set of **file/directory names** to skip (not paths)
+* `n_workers`: number of workers to use
+* `level`: compression level
 * Recursively archives contents
 * Does not follow symlinks
 

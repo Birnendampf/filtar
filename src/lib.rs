@@ -51,15 +51,19 @@ mod filtar {
 
     /// create a tar archive to dest while skipping files and directories from exclude
     #[pyfunction]
-    #[pyo3(signature = (src, dest, exclude = HashSet::new()))]
+    #[pyo3(signature = (src, dest, exclude = HashSet::new(), n_workers = 0, level = 0))]
     fn create(
         py: Python,
         src: Cow<Path>,
         dest: Cow<Path>,
         exclude: HashSet<OsString>,
+        n_workers: u32,
+        level: i32,
     ) -> io::Result<()> {
         py.detach(|| {
-            let mut a = tar::Builder::new(zstd::Encoder::new(fs::File::create(dest)?, 0)?);
+            let mut encoder = zstd::Encoder::new(fs::File::create(dest)?, level)?;
+            encoder.multithread(n_workers)?;
+            let mut a = tar::Builder::new(encoder);
             a.follow_symlinks(false);
             // XXX: it is possible that simple slice / vector may be faster here (no hashing)
             for entry in walkdir::WalkDir::new(&src)
