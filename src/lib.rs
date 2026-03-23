@@ -65,7 +65,7 @@ mod filtar {
             for entry in walkdir::WalkDir::new(&src)
                 .min_depth(1)
                 .into_iter()
-                .filter_entry(|e| exclude.contains(e.file_name()))
+                .filter_entry(|e| !exclude.contains(e.file_name()))
             {
                 // XXX: some stat calls could be saved here on Windows (metadata is already
                 //   populated but the append* functions call stat again)
