@@ -1,4 +1,6 @@
 # filtar
+[![PyPI - Version](https://img.shields.io/pypi/v/filtar)](https://pypi.org/project/filtar/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/filtar)]((https://pypi.org/project/filtar/))
 
 Minimal Python extension for fast tar file creation and extraction written in Rust.
 
