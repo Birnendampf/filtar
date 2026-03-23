@@ -12,7 +12,7 @@ Minimal Python extension for fast tar file creation and extraction written in Ru
 ## Constraints
 
 * Only supports **Zstandard-compressed tar archives**
-* Very small API (2 functions)
+* Error handling is very bare-bones (io errors are just passed through without details)
 * Behavior is intentionally limited and opinionated
 
 ## API
