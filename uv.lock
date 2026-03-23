@@ -1,13 +1,8 @@
 version = 1
 revision = 3
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 [[package]]
 name = "filtar"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
-
-[package.metadata]
-
-[package.metadata.requires-dev]
-dev = []
