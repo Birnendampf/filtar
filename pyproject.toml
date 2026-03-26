@@ -1,6 +1,6 @@
 [project]
 name = "filtar"
-version = "0.1.1"
+version = "0.2.0"
 description = "Partially compress and extract tar archives"
 requires-python = ">=3.10"
 readme = "README.md"
