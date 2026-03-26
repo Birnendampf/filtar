@@ -24,13 +24,21 @@ mod filtar {
         let exclude = process_exclude(exclude)?;
         py.detach(|| {
             fs::create_dir_all(&dest)?;
+            let mut skipped_dirs = Vec::new();
             let mut a = tar::Archive::new(zstd::Decoder::new(fs::File::open(src)?)?);
             for file in a.entries()? {
                 let mut file = file?;
                 let path = file.path()?;
-                // the python implementation does not scan through all ignored files on every
-                // iteration. If needed this could be optimized
-                if exclude.iter().any(|excluded| path.starts_with(excluded)) {
+                if exclude.contains(path.as_ref()) {
+                    if file.header().entry_type().is_dir() {
+                        skipped_dirs.push(path.into_owned());
+                    }
+                    continue;
+                };
+                if skipped_dirs
+                    .iter()
+                    .any(|excluded| path.starts_with(excluded))
+                {
                     continue;
                 }
                 file.unpack_in(&dest)?;
@@ -39,13 +47,13 @@ mod filtar {
         })
     }
 
-    fn process_exclude(exclude: Option<Bound<PyAny>>) -> PyResult<Vec<PathBuf>> {
+    fn process_exclude(exclude: Option<Bound<PyAny>>) -> PyResult<HashSet<PathBuf>> {
         match exclude {
             Some(obj) => obj
                 .try_iter()?
                 .map(|elem| elem.and_then(|elem| elem.extract()))
                 .collect(),
-            None => Ok(Vec::new()),
+            None => Ok(Default::default()),
         }
     }
 
@@ -65,7 +73,6 @@ mod filtar {
             encoder.multithread(n_workers)?;
             let mut a = tar::Builder::new(encoder);
             a.follow_symlinks(false);
-            // XXX: it is possible that simple slice / vector may be faster here (no hashing)
             for entry in walkdir::WalkDir::new(&src)
                 .min_depth(1)
                 .into_iter()
