@@ -9,6 +9,7 @@ mod filtar {
     use std::collections::HashSet;
     use std::ffi::OsString;
     use std::fs;
+    use std::hash::Hash;
     use std::io;
     use std::path::{Path, PathBuf};
 
@@ -21,12 +22,12 @@ mod filtar {
         dest: Cow<Path>,
         exclude: Option<Bound<PyAny>>,
     ) -> PyResult<()> {
-        let exclude = process_exclude(exclude)?;
+        let exclude: HashSet<PathBuf> = process_exclude(exclude)?;
         py.detach(|| {
             fs::create_dir_all(&dest)?;
             let mut skipped_dirs = Vec::new();
-            let mut a = tar::Archive::new(zstd::Decoder::new(fs::File::open(src)?)?);
-            for file in a.entries()? {
+            let mut archive = tar::Archive::new(zstd::Decoder::new(fs::File::open(src)?)?);
+            for file in archive.entries()? {
                 let mut file = file?;
                 let path = file.path()?;
                 if exclude.contains(path.as_ref()) {
@@ -47,11 +48,13 @@ mod filtar {
         })
     }
 
-    fn process_exclude(exclude: Option<Bound<PyAny>>) -> PyResult<HashSet<PathBuf>> {
+    fn process_exclude<'py, K: FromPyObjectOwned<'py> + Eq + Hash>(
+        exclude: Option<Bound<'py, PyAny>>,
+    ) -> PyResult<HashSet<K>> {
         match exclude {
             Some(obj) => obj
                 .try_iter()?
-                .map(|elem| elem.and_then(|elem| elem.extract()))
+                .map(|elem| elem.and_then(|elem| elem.extract().map_err(Into::into)))
                 .collect(),
             None => Ok(Default::default()),
         }
@@ -59,15 +62,16 @@ mod filtar {
 
     /// create a tar archive to dest while skipping files and directories from exclude
     #[pyfunction]
-    #[pyo3(signature = (src, dest, exclude = HashSet::new(), n_workers = 0, level = 0))]
+    #[pyo3(signature = (src, dest, exclude = None, n_workers = 0, level = 0))]
     fn create(
         py: Python,
         src: Cow<Path>,
         dest: Cow<Path>,
-        exclude: HashSet<OsString>,
+        exclude: Option<Bound<PyAny>>,
         n_workers: u32,
         level: i32,
     ) -> io::Result<()> {
+        let exclude: HashSet<OsString> = process_exclude(exclude)?;
         py.detach(|| {
             let mut encoder = zstd::Encoder::new(fs::File::create(dest)?, level)?;
             encoder.multithread(n_workers)?;

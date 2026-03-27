@@ -26,7 +26,7 @@ Extract archive to `dest`.
 
 ---
 
-### `create(src: StrPath, dest: StrPath, exclude: Set[str] = ... , n_workers: int = 0, level: int = 0) -> None`
+### `create(src: StrPath, dest: StrPath, exclude: Iterable[str] | None = None ,n_workers: int = 0, level: int = 0) -> None`
 
 Create archive from `src`.
 
