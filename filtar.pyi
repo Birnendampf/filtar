@@ -5,7 +5,7 @@ def extract(src: StrPath, dest: StrPath, exclude: Iterable[StrPath] | None = Non
 def create(
     src: StrPath,
     dest: StrPath,
-    exclude: Iterable[str] | None = None,
     n_workers: int = 0,
     level: int = 0,
+    exclude: Iterable[str] | None = None,
 ) -> None: ...

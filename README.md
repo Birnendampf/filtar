@@ -26,11 +26,11 @@ Extract archive to `dest`.
 
 ---
 
-### `create(src: StrPath, dest: StrPath, exclude: Iterable[str] | None = None ,n_workers: int = 0, level: int = 0) -> None`
+### `create(src: StrPath, dest: StrPath, n_workers: int = 0, level: int = 0, exclude: Iterable[str] | None = None) -> None`
 
 Create archive from `src`.
 
-* `exclude`: set of **file/directory names** to skip (not paths)
+* `exclude`: iterable of of **file/directory names** to skip (not paths)
 * `n_workers`: number of workers to use
 * `level`: compression level
 * Recursively archives contents

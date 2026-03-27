@@ -62,14 +62,14 @@ mod filtar {
 
     /// create a tar archive to dest while skipping files and directories from exclude
     #[pyfunction]
-    #[pyo3(signature = (src, dest, exclude = None, n_workers = 0, level = 0))]
+    #[pyo3(signature = (src, dest, n_workers = 0, level = 0, exclude = None))]
     fn create(
         py: Python,
         src: Cow<Path>,
         dest: Cow<Path>,
-        exclude: Option<Bound<PyAny>>,
         n_workers: u32,
         level: i32,
+        exclude: Option<Bound<PyAny>>,
     ) -> io::Result<()> {
         let exclude: HashSet<OsString> = process_exclude(exclude)?;
         py.detach(|| {
